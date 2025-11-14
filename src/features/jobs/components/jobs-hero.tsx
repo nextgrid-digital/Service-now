@@ -4,16 +4,16 @@ import { Button } from '@/components/ui/button'
 
 export function JobsHero() {
   return (
-    <section className='relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 backdrop-blur-sm shadow-xl transition-all duration-500 hover:shadow-2xl group'>
+    <section className='relative overflow-hidden rounded-3xl border border-border/50 bg-gradient-to-br from-primary/10 via-accent/5 to-primary/5 backdrop-blur-sm'>
       {/* Animated gradient overlays */}
-      <div className='absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20 opacity-50 group-hover:opacity-70 transition-opacity duration-500' />
+      <div className='absolute inset-0 bg-gradient-to-br from-primary/20 via-transparent to-accent/20 opacity-50' />
       <div className='absolute inset-y-0 right-0 w-1/2 bg-gradient-to-l from-accent/10 via-transparent to-transparent blur-3xl opacity-60 pointer-events-none' />
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,_oklch(0.65_0.22_250_/_0.15),_transparent_50%)] pointer-events-none' />
       <div className='absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,_oklch(0.65_0.18_180_/_0.15),_transparent_50%)] pointer-events-none' />
 
       <div className='relative grid gap-12 p-8 sm:p-12 lg:p-16'>
         <div className='space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-700'>
-          <span className='inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 dark:bg-primary/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary dark:text-primary/90 backdrop-blur-md shadow-sm hover:shadow-md hover:scale-105 transition-all duration-200'>
+          <span className='inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 dark:bg-primary/20 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-primary dark:text-primary/90 backdrop-blur-md'>
             <Sparkles className='h-4 w-4 text-primary' />
             Your ServiceNow growth hub
           </span>
@@ -28,7 +28,7 @@ export function JobsHero() {
           </div>
 
           <div className='flex flex-col gap-3 sm:flex-row sm:items-center'>
-            <Button size='lg' asChild className='h-12 px-8 text-base font-semibold shadow-lg'>
+            <Button size='lg' asChild className='h-12 px-8 text-base font-semibold'>
               <Link to='/'>Browse roles</Link>
             </Button>
             <Button
@@ -45,23 +45,23 @@ export function JobsHero() {
           </div>
 
           <dl className='grid gap-4 text-sm sm:grid-cols-3'>
-            <div className='rounded-2xl border border-border/50 bg-card/50 dark:bg-card/30 backdrop-blur-md p-5 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 group/card'>
+            <div className='rounded-2xl border border-border/50 bg-card/50 dark:bg-card/30 backdrop-blur-md p-5'>
               <dt className='flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2'>
-                <Users className='h-4 w-4 text-primary group-hover/card:text-accent transition-colors duration-200' />
+                <Users className='h-4 w-4 text-primary' />
                 Talent reach
               </dt>
               <dd className='text-2xl font-bold text-foreground'>15k+ professionals</dd>
             </div>
-            <div className='rounded-2xl border border-border/50 bg-card/50 dark:bg-card/30 backdrop-blur-md p-5 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 group/card'>
+            <div className='rounded-2xl border border-border/50 bg-card/50 dark:bg-card/30 backdrop-blur-md p-5'>
               <dt className='flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2'>
-                <BriefcaseBusiness className='h-4 w-4 text-primary group-hover/card:text-accent transition-colors duration-200' />
+                <BriefcaseBusiness className='h-4 w-4 text-primary' />
                 Active roles
               </dt>
               <dd className='text-2xl font-bold text-foreground'>250+ listings</dd>
             </div>
-            <div className='rounded-2xl border border-border/50 bg-card/50 dark:bg-card/30 backdrop-blur-md p-5 shadow-sm hover:shadow-md hover:scale-[1.02] transition-all duration-300 group/card'>
+            <div className='rounded-2xl border border-border/50 bg-card/50 dark:bg-card/30 backdrop-blur-md p-5'>
               <dt className='flex items-center gap-2 text-xs font-medium uppercase tracking-wider text-muted-foreground mb-2'>
-                <ArrowRight className='h-4 w-4 text-primary group-hover/card:text-accent transition-colors duration-200' />
+                <ArrowRight className='h-4 w-4 text-primary' />
                 Success rate
               </dt>
               <dd className='text-2xl font-bold text-foreground'>4x faster matches</dd>
