@@ -1,0 +1,95 @@
+import { useNavigate } from '@tanstack/react-router'
+import { MapPin, DollarSign, Briefcase, Calendar } from 'lucide-react'
+import { Card, CardContent, CardFooter, CardHeader } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { ApplyButton } from './apply-button'
+import type { Job } from '@/types/job'
+import { formatDistanceToNow } from 'date-fns'
+import { cn } from '@/lib/utils'
+
+interface JobCardProps {
+  job: Job
+  applied?: boolean
+}
+
+export function JobCard({ job, applied = false }: JobCardProps) {
+  const timeAgo = formatDistanceToNow(job.createdAt, { addSuffix: true })
+  const navigate = useNavigate()
+
+  return (
+    <Card
+      className={cn(
+        'flex flex-col transition-shadow hover:shadow-md cursor-pointer',
+        applied && 'opacity-75'
+      )}
+      role='button'
+      tabIndex={0}
+      onClick={() =>
+        navigate({
+          to: '/jobs/$jobId',
+          params: { jobId: job.id },
+        })
+      }
+      onKeyDown={(event) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault()
+          navigate({
+            to: '/jobs/$jobId',
+            params: { jobId: job.id },
+          })
+        }
+      }}
+    >
+      <CardHeader>
+        <div className='flex items-start justify-between gap-2'>
+          <div className='flex-1'>
+            <h3 className='text-lg font-semibold leading-tight hover:text-primary transition-colors'>
+              {job.title}
+            </h3>
+            <p className='text-muted-foreground mt-1 text-sm'>{job.company}</p>
+          </div>
+          {applied && (
+            <Badge variant='secondary' className='shrink-0'>
+              Applied
+            </Badge>
+          )}
+        </div>
+      </CardHeader>
+      <CardContent className='flex-1 space-y-3'>
+        <div className='flex flex-wrap gap-2 text-sm text-muted-foreground'>
+          {job.location && (
+            <div className='flex items-center gap-1'>
+              <MapPin className='h-4 w-4' />
+              <span>{job.location}</span>
+            </div>
+          )}
+          {job.salary && (
+            <div className='flex items-center gap-1'>
+              <DollarSign className='h-4 w-4' />
+              <span>{job.salary}</span>
+            </div>
+          )}
+          <div className='flex items-center gap-1'>
+            <Briefcase className='h-4 w-4' />
+            <span className='capitalize'>{job.type.replace('-', ' ')}</span>
+          </div>
+        </div>
+        <p className='text-muted-foreground line-clamp-3 text-sm whitespace-pre-line'>
+          {job.overview || job.description}
+        </p>
+        <div className='flex items-center gap-1 text-xs text-muted-foreground'>
+          <Calendar className='h-3 w-3' />
+          <span>Posted {timeAgo}</span>
+        </div>
+      </CardContent>
+      <CardFooter
+        onClick={(event) => {
+          event.stopPropagation()
+        }}
+      >
+        <ApplyButton jobId={job.id} applied={applied} className='w-full' />
+      </CardFooter>
+    </Card>
+  )
+}
+
