@@ -9,13 +9,13 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          'border-transparent bg-primary text-primary-foreground [a&]:hover:bg-primary/90',
+          'border-transparent bg-gradient-to-r from-primary to-primary/90 text-primary-foreground shadow-sm [a&]:hover:shadow-md [a&]:hover:scale-105 transition-all duration-200',
         secondary:
-          'border-transparent bg-secondary text-secondary-foreground [a&]:hover:bg-secondary/90',
+          'border-transparent bg-gradient-to-r from-secondary to-secondary/90 text-secondary-foreground shadow-sm [a&]:hover:shadow-md [a&]:hover:scale-105 transition-all duration-200',
         destructive:
-          'border-transparent bg-destructive text-white [a&]:hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60',
+          'border-transparent bg-gradient-to-r from-destructive to-destructive/90 text-white shadow-sm [a&]:hover:shadow-md [a&]:hover:scale-105 transition-all duration-200 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40',
         outline:
-          'text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground',
+          'text-foreground border-border/50 bg-background/50 backdrop-blur-sm [a&]:hover:bg-accent [a&]:hover:text-accent-foreground [a&]:hover:border-accent/50 [a&]:hover:scale-105 transition-all duration-200',
       },
     },
     defaultVariants: {

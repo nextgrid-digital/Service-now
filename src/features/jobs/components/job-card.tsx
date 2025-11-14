@@ -19,7 +19,11 @@ export function JobCard({ job, applied = false }: JobCardProps) {
   return (
     <Card
       className={cn(
-        'flex flex-col transition-shadow hover:shadow-md cursor-pointer',
+        'flex flex-col cursor-pointer group relative overflow-hidden',
+        'hover:scale-[1.02] active:scale-[0.99]',
+        'before:absolute before:inset-0 before:bg-gradient-to-br before:from-primary/5 before:via-transparent before:to-accent/5',
+        'before:opacity-0 before:transition-opacity before:duration-300',
+        'hover:before:opacity-100',
         applied && 'opacity-75'
       )}
       role='button'
@@ -40,13 +44,13 @@ export function JobCard({ job, applied = false }: JobCardProps) {
         }
       }}
     >
-      <CardHeader>
+      <CardHeader className='relative z-10'>
         <div className='flex items-start justify-between gap-2'>
           <div className='flex-1'>
-            <h3 className='text-lg font-semibold leading-tight hover:text-primary transition-colors'>
+            <h3 className='text-lg font-semibold leading-tight group-hover:text-primary transition-colors duration-200'>
               {job.title}
             </h3>
-            <p className='text-muted-foreground mt-1 text-sm'>{job.company}</p>
+            <p className='text-muted-foreground mt-1.5 text-sm font-medium'>{job.company}</p>
           </div>
           {applied && (
             <Badge variant='secondary' className='shrink-0'>
@@ -55,8 +59,8 @@ export function JobCard({ job, applied = false }: JobCardProps) {
           )}
         </div>
       </CardHeader>
-      <CardContent className='flex-1 space-y-3'>
-        <div className='flex flex-wrap gap-2 text-sm text-muted-foreground'>
+      <CardContent className='flex-1 space-y-3 relative z-10'>
+        <div className='flex flex-wrap gap-2.5 text-sm text-muted-foreground'>
           {job.location && (
             <div className='flex items-center gap-1'>
               <MapPin className='h-4 w-4' />

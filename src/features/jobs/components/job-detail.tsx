@@ -74,7 +74,7 @@ export function JobDetail() {
 
         <div className='grid gap-6 lg:grid-cols-3'>
           <div className='lg:col-span-2'>
-            <Card className='border-0'>
+            <Card className='border-0 shadow-lg'>
               <CardHeader>
                 <div className='flex flex-col gap-4'>
                   <div className='flex items-start justify-between gap-4'>
