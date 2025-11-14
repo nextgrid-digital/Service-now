@@ -17,6 +17,19 @@
     @apply bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full;
   }
 
+  #root {
+    @apply mx-auto flex min-h-svh w-full flex-col;
+    max-width: 80vw;
+    transition: max-width 200ms ease, padding 200ms ease;
+  }
+
+  @media (max-width: 1024px) {
+    #root {
+      max-width: 100vw;
+      padding-inline: 1rem;
+    }
+  }
+
   /* Override Radix scroll locking for sticky headers */
   body[data-scroll-locked] {
     overflow: unset !important;
