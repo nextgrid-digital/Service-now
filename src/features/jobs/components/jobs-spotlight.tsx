@@ -1,8 +1,9 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
 import { ArrowUpRight } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Avatar, AvatarFallback } from '@/components/ui/avatar'
+import { cn } from '@/lib/utils'
 
 const spotlightCards = [
   {
@@ -48,6 +49,8 @@ const spotlightCards = [
 ]
 
 export function JobsSpotlight() {
+  const navigate = useNavigate()
+
   return (
     <section className='space-y-4 rounded-2xl border border-border/60 bg-background/70 p-4 sm:p-6 shadow-sm backdrop-blur'>
       <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
@@ -105,12 +108,35 @@ export function JobsSpotlight() {
           return (
             <Card
               key={card.id}
-              className={`border-0 ${card.className}`}
+              className={cn(
+                'border-0 cursor-pointer group relative overflow-hidden',
+                'hover:scale-[1.02] active:scale-[0.99] transition-transform duration-200',
+                card.className
+              )}
+              role='button'
+              tabIndex={0}
+              onClick={() => {
+                if (card.jobId) {
+                  navigate({
+                    to: '/jobs/$jobId',
+                    params: { jobId: card.jobId },
+                  })
+                }
+              }}
+              onKeyDown={(event) => {
+                if ((event.key === 'Enter' || event.key === ' ') && card.jobId) {
+                  event.preventDefault()
+                  navigate({
+                    to: '/jobs/$jobId',
+                    params: { jobId: card.jobId },
+                  })
+                }
+              }}
             >
-              <CardContent className='flex h-full flex-col justify-between gap-4 sm:gap-5 md:gap-6 p-4 sm:p-5 md:p-6'>
+              <CardContent className='flex h-full flex-col justify-between gap-4 sm:gap-5 md:gap-6 p-4 sm:p-5 md:p-6 relative z-10'>
                 <div className='space-y-2 sm:space-y-3'>
                   <div className='space-y-1'>
-                    <h3 className='text-base sm:text-lg md:text-xl font-semibold leading-tight'>
+                    <h3 className='text-base sm:text-lg md:text-xl font-semibold leading-tight group-hover:opacity-90 transition-opacity'>
                       {card.title}
                     </h3>
                     <p className='text-xs sm:text-sm opacity-90'>{card.meta}</p>
@@ -120,7 +146,12 @@ export function JobsSpotlight() {
                   </p>
                 </div>
 
-                <div className='flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-2 border-t border-white/10 sm:border-t-0 sm:pt-0'>
+                <div 
+                  className='flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-2 border-t border-white/10 sm:border-t-0 sm:pt-0'
+                  onClick={(event) => {
+                    event.stopPropagation()
+                  }}
+                >
                   <div className='flex items-center gap-2 sm:gap-3 min-w-0'>
                     <Avatar className='h-8 w-8 sm:h-10 sm:w-10 border border-white/40 bg-white/15 shrink-0'>
                       <AvatarFallback className='text-xs font-semibold'>
@@ -136,7 +167,10 @@ export function JobsSpotlight() {
                     asChild
                     variant='secondary'
                     size='sm'
-                    className={`w-full sm:w-auto rounded-full px-4 sm:px-6 text-xs sm:text-sm shrink-0 ${buttonClassName}`}
+                    className={cn(
+                      'w-full sm:w-auto rounded-full px-4 sm:px-6 text-xs sm:text-sm shrink-0',
+                      buttonClassName
+                    )}
                   >
                     <Link to='/jobs/$jobId' params={{ jobId: card.jobId! }}>
                       Apply
