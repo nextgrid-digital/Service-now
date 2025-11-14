@@ -49,48 +49,49 @@ const spotlightCards = [
 
 export function JobsSpotlight() {
   return (
-    <section className='space-y-4 rounded-2xl border border-border/60 bg-background/70 p-6 shadow-sm backdrop-blur'>
+    <section className='space-y-4 rounded-2xl border border-border/60 bg-background/70 p-4 sm:p-6 shadow-sm backdrop-blur'>
       <div className='flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between'>
         <div className='space-y-1'>
-          <h2 className='text-xl font-semibold sm:text-2xl'>In the spotlight</h2>
-          <p className='text-muted-foreground text-sm sm:text-base'>
-            Hand-picked roles from top teams. Discover what’s trending right now.
+          <h2 className='text-lg font-semibold sm:text-xl md:text-2xl'>In the spotlight</h2>
+          <p className='text-muted-foreground text-xs sm:text-sm md:text-base'>
+            Hand-picked roles from top teams. Discover what's trending right now.
           </p>
         </div>
-        <Button asChild variant='link' className='px-0'>
+        <Button asChild variant='link' className='px-0 text-xs sm:text-sm'>
           <Link to='/jobs/post' className='gap-1'>
             Add a job
-            <ArrowUpRight className='h-4 w-4' />
+            <ArrowUpRight className='h-3 w-3 sm:h-4 sm:w-4' />
           </Link>
         </Button>
       </div>
 
-      <div className='grid gap-4 md:grid-cols-3'>
+      <div className='grid gap-4 sm:grid-cols-2 lg:grid-cols-3'>
         {spotlightCards.map((card) => {
           if (card.cta) {
             return (
               <Card
                 key={card.id}
-                className={`flex flex-col justify-between p-6 ${card.className}`}
+                className={`flex flex-col justify-between p-4 sm:p-5 md:p-6 ${card.className}`}
               >
-                <CardContent className='flex h-full flex-col justify-between gap-4 p-0 text-sm leading-relaxed'>
-                  <div className='space-y-3'>
-                    <p className='text-lg font-semibold text-foreground'>
+                <CardContent className='flex h-full flex-col justify-between gap-3 sm:gap-4 p-0 text-xs sm:text-sm leading-relaxed'>
+                  <div className='space-y-2 sm:space-y-3'>
+                    <p className='text-base sm:text-lg font-semibold text-foreground'>
                       {card.title}
                     </p>
-                    <p>{card.description}</p>
+                    <p className='line-clamp-3 sm:line-clamp-none'>{card.description}</p>
                   </div>
                   <div className='space-y-2'>
-                    <p className='font-medium text-foreground'>Why spotlight?</p>
-                    <p>{card.meta}</p>
+                    <p className='text-xs sm:text-sm font-medium text-foreground'>Why spotlight?</p>
+                    <p className='text-xs sm:text-sm'>{card.meta}</p>
                     <Button
                       asChild
                       variant='outline'
-                      className='gap-2 border-primary/40 text-primary hover:border-primary/60'
+                      size='sm'
+                      className='w-full sm:w-auto gap-2 text-xs sm:text-sm border-primary/40 text-primary hover:border-primary/60'
                     >
                       <Link to='/jobs/post'>
                         Spotlight your job
-                        <ArrowUpRight className='h-4 w-4' />
+                        <ArrowUpRight className='h-3 w-3 sm:h-4 sm:w-4' />
                       </Link>
                     </Button>
                   </div>
@@ -106,35 +107,36 @@ export function JobsSpotlight() {
               key={card.id}
               className={`border-0 ${card.className}`}
             >
-              <CardContent className='flex h-full flex-col justify-between gap-6 p-6'>
-                <div className='space-y-3'>
+              <CardContent className='flex h-full flex-col justify-between gap-4 sm:gap-5 md:gap-6 p-4 sm:p-5 md:p-6'>
+                <div className='space-y-2 sm:space-y-3'>
                   <div className='space-y-1'>
-                    <h3 className='text-lg font-semibold sm:text-xl'>
+                    <h3 className='text-base sm:text-lg md:text-xl font-semibold leading-tight'>
                       {card.title}
                     </h3>
-                    <p className='text-sm opacity-90'>{card.meta}</p>
+                    <p className='text-xs sm:text-sm opacity-90'>{card.meta}</p>
                   </div>
-                  <p className='text-sm opacity-90'>
+                  <p className='text-xs sm:text-sm opacity-90 line-clamp-3 sm:line-clamp-4 md:line-clamp-none leading-relaxed'>
                     {card.description}
                   </p>
                 </div>
 
-                <div className='flex items-center justify-between gap-4'>
-                  <div className='flex items-center gap-3'>
-                    <Avatar className='h-10 w-10 border border-white/40 bg-white/15'>
+                <div className='flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 sm:gap-4 pt-2 border-t border-white/10 sm:border-t-0 sm:pt-0'>
+                  <div className='flex items-center gap-2 sm:gap-3 min-w-0'>
+                    <Avatar className='h-8 w-8 sm:h-10 sm:w-10 border border-white/40 bg-white/15 shrink-0'>
                       <AvatarFallback className='text-xs font-semibold'>
                         {card.avatar}
                       </AvatarFallback>
                     </Avatar>
-                    <div>
-                      <p className='text-sm font-semibold'>{card.company}</p>
-                      <p className='text-xs opacity-80'>{card.companyTag}</p>
+                    <div className='min-w-0 flex-1'>
+                      <p className='text-xs sm:text-sm font-semibold truncate'>{card.company}</p>
+                      <p className='text-xs opacity-80 truncate'>{card.companyTag}</p>
                     </div>
                   </div>
                   <Button
                     asChild
                     variant='secondary'
-                    className={`rounded-full px-6 ${buttonClassName}`}
+                    size='sm'
+                    className={`w-full sm:w-auto rounded-full px-4 sm:px-6 text-xs sm:text-sm shrink-0 ${buttonClassName}`}
                   >
                     <Link to='/jobs/$jobId' params={{ jobId: card.jobId! }}>
                       Apply
