@@ -1,7 +1,8 @@
 import type { Job, CreateJobInput } from '@/types/job'
 import { sampleJobs } from '@/features/jobs/data/jobs'
 
-const API_BASE_URL = import.meta.env.VITE_DATA_API_URL
+// Use VITE_DATA_API_URL if set, otherwise use relative /api paths (for Vercel)
+const API_BASE_URL = import.meta.env.VITE_DATA_API_URL || '/api'
 
 export type SpotlightJob = {
   jobId: string
