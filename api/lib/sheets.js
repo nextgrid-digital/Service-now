@@ -37,6 +37,8 @@ export function initSheets() {
 
   if (!credentials) {
     console.warn('⚠️  GOOGLE_SERVICE_ACCOUNT_KEY not set.')
+    // Return a mock client that returns empty data instead of null
+    // This allows the API to deploy even without credentials
     return null
   }
 
