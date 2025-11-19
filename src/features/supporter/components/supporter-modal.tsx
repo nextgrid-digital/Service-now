@@ -42,18 +42,24 @@ export function SupporterModal({ open, onOpenChange }: SupporterModalProps) {
 
     setIsProcessing(true)
 
-    // Simulate payment processing
-    toast.promise(sleep(2000), {
+    const paymentPromise = (async () => {
+      await sleep(2000)
+      await setSupporter(userId, amountNum)
+    })()
+
+    toast.promise(paymentPromise, {
       loading: 'Processing payment...',
       success: () => {
         setIsProcessing(false)
-        setSupporter(userId, amountNum)
         onOpenChange(false)
-        setAmount('49') // Reset amount
+        setAmount('49')
         toast.success('Thank you for your support!')
         return 'Payment successful!'
       },
-      error: 'Payment failed. Please try again.',
+      error: () => {
+        setIsProcessing(false)
+        return 'Payment failed. Please try again.'
+      },
     })
   }
 

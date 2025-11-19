@@ -1,7 +1,13 @@
 import { create } from 'zustand'
 import { getStorageItem, setStorageItem } from '@/lib/local-storage'
+import {
+  fetchSupporters,
+  removeSupporterRecord,
+  upsertSupporter,
+  type SupporterRecord,
+} from '@/lib/api'
 
-interface Supporter {
+export interface Supporter {
   userId: string
   isSupporter: boolean
   supportedAt?: Date
@@ -11,10 +17,11 @@ interface Supporter {
 interface SupporterState {
   supporters: Supporter[]
   isSupporter: (userId: string) => boolean
-  setSupporter: (userId: string, amount?: number) => void
-  removeSupporter: (userId: string) => void
+  setSupporter: (userId: string, amount?: number) => Promise<void>
+  removeSupporter: (userId: string) => Promise<void>
   getAllSupporters: () => Supporter[]
   getFeaturedSupporters: (limit?: number) => Supporter[]
+  refresh: () => Promise<void>
 }
 
 const STORAGE_KEY = 'supporters'
@@ -31,6 +38,25 @@ export const useSupporterStore = create<SupporterState>()((set, get) => {
       : undefined,
   }))
 
+  const persistSupporters = (updated: Supporter[]) => {
+    setStorageItem(STORAGE_KEY, updated)
+  }
+
+  const hydrateSupporter = (record: SupporterRecord): Supporter => ({
+    userId: record.userId,
+    isSupporter: record.isSupporter,
+    amount: record.amount,
+    supportedAt: record.supportedAt ? new Date(record.supportedAt) : undefined,
+  })
+
+  fetchSupporters().then((apiSupporters) => {
+    if (apiSupporters.length) {
+      const hydrated = apiSupporters.map(hydrateSupporter)
+      set({ supporters: hydrated })
+      persistSupporters(hydrated)
+    }
+  })
+
   return {
     supporters,
 
@@ -39,40 +65,47 @@ export const useSupporterStore = create<SupporterState>()((set, get) => {
       return supporter?.isSupporter ?? false
     },
 
-    setSupporter: (userId, amount) => {
+    setSupporter: async (userId, amount) => {
+      const newSupporter: Supporter = {
+        userId,
+        isSupporter: true,
+        supportedAt: new Date(),
+        amount,
+      }
+
       set((state) => {
         const existingIndex = state.supporters.findIndex(
           (s) => s.userId === userId
         )
 
-        const newSupporter: Supporter = {
-          userId,
-          isSupporter: true,
-          supportedAt: new Date(),
-          amount,
-        }
+        const updatedSupporters =
+          existingIndex >= 0
+            ? state.supporters.map((supporter, index) =>
+                index === existingIndex ? newSupporter : supporter
+              )
+            : [...state.supporters, newSupporter]
 
-        let updatedSupporters: Supporter[]
-        if (existingIndex >= 0) {
-          updatedSupporters = [...state.supporters]
-          updatedSupporters[existingIndex] = newSupporter
-        } else {
-          updatedSupporters = [...state.supporters, newSupporter]
-        }
-
-        setStorageItem(STORAGE_KEY, updatedSupporters)
+        persistSupporters(updatedSupporters)
         return { supporters: updatedSupporters }
+      })
+
+      await upsertSupporter({
+        userId,
+        isSupporter: true,
+        amount,
+        supportedAt: newSupporter.supportedAt?.toISOString(),
       })
     },
 
-    removeSupporter: (userId) => {
+    removeSupporter: async (userId) => {
       set((state) => {
         const updatedSupporters = state.supporters.filter(
           (s) => s.userId !== userId
         )
-        setStorageItem(STORAGE_KEY, updatedSupporters)
+        persistSupporters(updatedSupporters)
         return { supporters: updatedSupporters }
       })
+      await removeSupporterRecord(userId)
     },
 
     getAllSupporters: () => {
@@ -91,6 +124,15 @@ export const useSupporterStore = create<SupporterState>()((set, get) => {
           )
         })
         .slice(0, limit)
+    },
+
+    refresh: async () => {
+      const apiSupporters = await fetchSupporters()
+      if (apiSupporters.length) {
+        const hydrated = apiSupporters.map(hydrateSupporter)
+        set({ supporters: hydrated })
+        persistSupporters(hydrated)
+      }
     },
   }
 })

@@ -7,7 +7,6 @@ import { ThemeSwitch } from '@/components/theme-switch'
 import { ConfigDrawer } from '@/components/config-drawer'
 import { useJobsStore } from '@/stores/jobs-store'
 import { getStorageItem, setStorageItem } from '@/lib/local-storage'
-import { sampleJobs } from './data/jobs'
 import { JobsGrid } from './components/jobs-grid'
 import { JobsFeed } from './components/jobs-feed'
 import { JobsFilter, type SortOption } from './components/jobs-filter'
@@ -18,7 +17,7 @@ import { Button } from '@/components/ui/button'
 import { JobsHero } from './components/jobs-hero'
 
 export function JobsListing() {
-  const { jobs, initializeJobs } = useJobsStore()
+  const { jobs, refresh } = useJobsStore()
   const [searchQuery, setSearchQuery] = useState('')
   const [locationFilter, setLocationFilter] = useState('')
   const [typeFilter, setTypeFilter] = useState('')
@@ -28,12 +27,12 @@ export function JobsListing() {
     return savedView || 'grid'
   })
 
-  // Initialize jobs on mount if empty
+  // Refresh jobs from API/Sheets when empty
   useEffect(() => {
     if (jobs.length === 0) {
-      initializeJobs(sampleJobs)
+      void refresh()
     }
-  }, [jobs.length, initializeJobs])
+  }, [jobs.length, refresh])
 
   const handleViewChange = (newView: ViewMode) => {
     setView(newView)

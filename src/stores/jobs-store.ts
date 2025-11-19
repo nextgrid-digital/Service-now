@@ -1,15 +1,22 @@
 import { create } from 'zustand'
 import type { Job, CreateJobInput } from '@/types/job'
 import { getStorageItem, setStorageItem } from '@/lib/local-storage'
+import {
+  fetchJobsFromDataSource,
+  createJobRecord,
+  updateJobRecord,
+  deleteJobRecord,
+} from '@/lib/api'
 
 interface JobsState {
   jobs: Job[]
-  addJob: (job: CreateJobInput) => Job
-  updateJob: (id: string, updates: Partial<Job>) => void
-  deleteJob: (id: string) => void
+  addJob: (job: CreateJobInput) => Promise<Job>
+  updateJob: (id: string, updates: Partial<Job>) => Promise<void>
+  deleteJob: (id: string) => Promise<void>
   getJob: (id: string) => Job | undefined
   getJobsByCompany: (companyId: string) => Job[]
   initializeJobs: (jobs: Job[]) => void
+  refresh: () => Promise<void>
 }
 
 const STORAGE_KEY = 'jobs'
@@ -25,41 +32,71 @@ export const useJobsStore = create<JobsState>()((set, get) => {
     updatedAt: job.updatedAt ? new Date(job.updatedAt) : undefined,
   }))
 
+  const persistJobs = (updatedJobs: Job[]) => {
+    setStorageItem(STORAGE_KEY, updatedJobs)
+  }
+
+  // seed from API if available
+  fetchJobsFromDataSource().then((apiJobs) => {
+    set({ jobs: apiJobs })
+    persistJobs(apiJobs)
+  })
+
   return {
     jobs,
 
-    addJob: (jobInput) => {
-      const newJob: Job = {
+    addJob: async (jobInput) => {
+      const tempJob: Job = {
         ...jobInput,
         id: crypto.randomUUID(),
         createdAt: new Date(),
       }
       set((state) => {
-        const updatedJobs = [...state.jobs, newJob]
-        setStorageItem(STORAGE_KEY, updatedJobs)
+        const updatedJobs = [...state.jobs, tempJob]
+        persistJobs(updatedJobs)
         return { jobs: updatedJobs }
       })
-      return newJob
+      const persistedJob = await createJobRecord(jobInput)
+      if (persistedJob) {
+        set((state) => {
+          const updatedJobs = state.jobs.map((job) =>
+            job.id === tempJob.id ? persistedJob : job
+          )
+          persistJobs(updatedJobs)
+          return { jobs: updatedJobs }
+        })
+        return persistedJob
+      }
+      return tempJob
     },
 
-    updateJob: (id, updates) => {
+    updateJob: async (id, updates) => {
       set((state) => {
         const updatedJobs = state.jobs.map((job) =>
-          job.id === id
-            ? { ...job, ...updates, updatedAt: new Date() }
-            : job
+          job.id === id ? { ...job, ...updates, updatedAt: new Date() } : job
         )
-        setStorageItem(STORAGE_KEY, updatedJobs)
+        persistJobs(updatedJobs)
         return { jobs: updatedJobs }
       })
+      const persisted = await updateJobRecord(id, updates)
+      if (persisted) {
+        set((state) => {
+          const updatedJobs = state.jobs.map((job) =>
+            job.id === id ? persisted : job
+          )
+          persistJobs(updatedJobs)
+          return { jobs: updatedJobs }
+        })
+      }
     },
 
-    deleteJob: (id) => {
+    deleteJob: async (id) => {
       set((state) => {
         const updatedJobs = state.jobs.filter((job) => job.id !== id)
-        setStorageItem(STORAGE_KEY, updatedJobs)
+        persistJobs(updatedJobs)
         return { jobs: updatedJobs }
       })
+      await deleteJobRecord(id)
     },
 
     getJob: (id) => {
@@ -72,7 +109,13 @@ export const useJobsStore = create<JobsState>()((set, get) => {
 
     initializeJobs: (initialJobs) => {
       set({ jobs: initialJobs })
-      setStorageItem(STORAGE_KEY, initialJobs)
+      persistJobs(initialJobs)
+    },
+
+    refresh: async () => {
+      const remoteJobs = await fetchJobsFromDataSource()
+      set({ jobs: remoteJobs })
+      persistJobs(remoteJobs)
     },
   }
 })

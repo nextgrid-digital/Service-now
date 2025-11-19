@@ -90,8 +90,8 @@ export function MyJobs() {
                       <Button
                         variant='ghost'
                         size='icon'
-                        onClick={() => {
-                          deleteJob(job.id)
+                        onClick={async () => {
+                          await deleteJob(job.id)
                         }}
                       >
                         <Trash2 className='h-4 w-4' />

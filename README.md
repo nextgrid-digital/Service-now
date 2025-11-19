@@ -10,14 +10,14 @@ I've been creating dashboard UIs at work and for my personal projects. I always 
 
 ## Features
 
-- Light/dark mode
-- Responsive
-- Accessible
-- With built-in Sidebar component
+- Light/dark mode with theming tokens
+- Responsive layouts for grid + feed views
+- Accessible components (Radix + shadcn/ui base)
 - Global search command
-- 10+ pages
-- Extra custom components
-- RTL support
+- 10+ application pages (jobs, apps, chats, tasks, etc.)
+- Extra custom components and RTL support
+- **Clerk-powered authentication** (modal sign-in/sign-up)
+- **Admin dashboard** at `/admin` for moderating jobs, spotlight slots, posting requests, and supporters
 
 <details>
 <summary>Customized Components (click to expand)</summary>
@@ -70,48 +70,89 @@ If you want to update components using the Shadcn CLI (e.g., `npx shadcn@latest 
 
 **Icons:** [Lucide Icons](https://lucide.dev/icons/), [Tabler Icons](https://tabler.io/icons) (Brand icons only)
 
-**Auth (partial):** [Clerk](https://go.clerk.com/GttUAaK)
+**Auth:** [Clerk](https://clerk.com/) React SDK (modal sign-in/sign-up)
+
+## Environment variables
+
+Create `.env.local` (or `.env`) with the following values. `.env*` files are ignored by git.
+
+```bash
+VITE_CLERK_PUBLISHABLE_KEY=YOUR_CLERK_PUBLISHABLE_KEY
+# Optional backend bridge for CSV/Sheets driven data
+VITE_DATA_API_URL=https://your-api.example.com
+# Optional comma-separated list of admin emails allowed to access /admin
+VITE_ADMIN_EMAILS=admin@example.com,owner@example.com
+```
+
+- `VITE_CLERK_PUBLISHABLE_KEY` is required for Clerk to render auth modals. Generate it from your Clerk dashboard (React quickstart).
+- `VITE_DATA_API_URL` is optional. When provided, the new API client reads/writes jobs, spotlight entries, posting requests, and supporters from your backend or Google Sheets adapter. If omitted, the UI falls back to local mock data.
+- `VITE_ADMIN_EMAILS` lets you specify who can access `/admin`. When omitted, any signed-in user will see the admin tooling (useful for local testing).
 
 ## Run Locally
 
-Clone the project
+### Frontend Setup
 
 ```bash
-  git clone https://github.com/satnaing/shadcn-admin.git
+git clone https://github.com/nextgrid-digital/Service-now.git
+cd Service-now
+npm install   # or pnpm install
+cp .env.example .env.local  # add the Clerk key + optional API URL/admin emails
+npm run dev
 ```
 
-Go to the project directory
+### Backend Setup (Google Sheets Adapter)
 
-```bash
-  cd shadcn-admin
-```
+The project includes a backend adapter that connects to Google Sheets. To use it:
 
-Install dependencies
+1. **Set up the backend:**
+   ```bash
+   cd backend
+   npm install
+   ```
 
-```bash
-  pnpm install
-```
+2. **Configure Google Sheets API:**
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+   - Enable the Google Sheets API
+   - Create a Service Account
+   - Download the service account key JSON file
+   - Save it as `service-account-key.json` in the `backend/` directory
+   - Share your Google Sheet with the service account email (found in the JSON file)
 
-Start the server
+3. **Configure backend environment:**
+   ```bash
+   cd backend
+   cp .env.example .env
+   ```
+   Edit `.env` and add:
+   - `GOOGLE_SPREADSHEET_ID`: The ID from your Google Sheets URL (found in the URL: `https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/edit`)
+   - `GOOGLE_SERVICE_ACCOUNT_KEY_FILE`: Path to your service account key (default: `./service-account-key.json`)
 
-```bash
-  pnpm run dev
-```
+4. **Set up your Google Sheet:**
+   Create a Google Sheet with the following tabs (sheets):
+   - **Jobs** - Columns: `id`, `title`, `company`, `location`, `type`, `salary`, `description`, `requirements`, `postedBy`, `createdAt`, `updatedAt`
+   - **Spotlight** - Columns: `jobId`, `priority`, `paid`
+   - **PostingRequests** - Columns: `id`, `company`, `jobTitle`, `amountPaid`, `status`, `createdAt`
+   - **Supporters** - Columns: `userId`, `name`, `email`, `amount`, `supportedAt`, `isSupporter`
 
-## Sponsoring this project ❤️
+5. **Start the backend server:**
+   ```bash
+   cd backend
+   npm run dev  # Runs on http://localhost:3001
+   ```
 
-If you find this project helpful or use this in your own work, consider [sponsoring me](https://github.com/sponsors/satnaing) to support development and maintenance. You can [buy me a coffee](https://buymeacoffee.com/satnaing) as well. Don’t worry, every penny helps. Thank you! 🙏
+6. **Update frontend `.env.local`:**
+   Add the backend URL:
+   ```bash
+   VITE_DATA_API_URL=http://localhost:3001
+   ```
 
-For questions or sponsorship inquiries, feel free to reach out at [contact@satnaing.dev](mailto:contact@satnaing.dev).
+## Admin & data overview
 
-### Current Sponsor
+- `/admin` now surfaces a guarded dashboard that requires a signed-in Clerk user whose email appears in `VITE_ADMIN_EMAILS` (or whose public metadata contains `role: "admin"`).
+- Jobs, supporters, and future spotlight/posting request data flow through the new API client (`src/lib/api.ts`). When a `VITE_DATA_API_URL` is set, the client calls your backend/Sheets adapter; otherwise it falls back to the bundled sample data so the UI still works offline.
+- Public pages (`/`, spotlight carousel, supporter components, etc.) read from the same stores/API so you see live changes immediately after moderators take action.
 
-- [Clerk](https://go.clerk.com/GttUAaK) - for backing the implementation of Clerk in this project
+---
 
-## Author
-
-Crafted with 🤍 by [@satnaing](https://github.com/satnaing)
-
-## License
-
-Licensed under the [MIT License](https://choosealicense.com/licenses/mit/)
+Original template by [@satnaing](https://github.com/satnaing). Released under the [MIT License](https://choosealicense.com/licenses/mit/).

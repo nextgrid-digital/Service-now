@@ -22,7 +22,8 @@ A modern, responsive web application that:
 - Curates ServiceNow-specific job listings from consultancies and enterprise platforms
 - Provides comprehensive profile building tools for job seekers
 - Enables companies to post jobs and manage their hiring pipeline
-- Offers premium features like job spotlighting for increased visibility
+- Secures access with Clerk-powered authentication (modal sign-in/sign-up) and an admin-only control center
+- Offers premium features like job spotlighting and supporter recognition for increased visibility
 
 ### 1.4 Success Metrics
 - **User Engagement:** 15,000+ registered professionals
@@ -463,6 +464,39 @@ A modern, responsive web application that:
 - Job posting requires company account
 - Profile building requires authentication
 
+### 4.10 Admin Control Center
+
+**Description:** Guarded `/admin` area for moderators/owners
+
+**Features:**
+
+- **Access Control**
+  - Protected by Clerk; only signed-in users whose email appears in `VITE_ADMIN_EMAILS` (or whose `publicMetadata.role === 'admin'`) can view the dashboard.
+  - Non-admins see a friendly “Access denied” screen with CTA to return home or sign in.
+
+- **Layout**
+  - Dedicated admin layout with left sidebar (nav placeholders for Jobs, Spotlight, Posting Requests, Supporters, Experiments) and top header showing user context.
+  - Main content composed of cards, tables, and action buttons powered by the API client / Zustand stores.
+
+- **Dashboards / Panels**
+  - Job listings overview with ability to publish/remove jobs (hooks into `useJobsStore` API-backed actions).
+  - Spotlight manager highlighting paid placements and allowing approve/remove actions.
+  - Posting requests table (awaiting payment confirmation) with approve/reject flows.
+  - Supporters panel listing backers with ability to remove/feature them.
+  - Stats row summarizing counts (jobs, spotlight queue, supporters, pending requests).
+
+- **Data Source**
+  - Reads from `src/lib/api.ts` which in turn hits `VITE_DATA_API_URL` (Google Sheets/CSV bridge) or falls back to local sample data.
+
+**User Stories:**
+- As an admin, I want to approve or remove job postings and spotlight entries.
+- As an admin, I want to track pending posting requests and supporter activity.
+- As an admin, I want a single interface where I can view marketplace health metrics.
+
+**Business Rules:**
+- Only authorized admins can access `/admin`.
+- Admin actions mutate the same Zustand stores that power the public UI, so updates are reflected instantly.
+
 ---
 
 ## 5. Technical Architecture
@@ -620,6 +654,19 @@ src/
   - `/settings/account` - Account settings
   - `/settings/appearance` - Appearance settings
   - `/settings/notifications` - Notification settings
+- `/admin` - Guarded admin dashboard (Clerk + email allowlist)
+
+### 5.6 Environment & Configuration
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `VITE_CLERK_PUBLISHABLE_KEY` | ✅ | Clerk React SDK publishable key used by `<ClerkProvider>` in `src/main.tsx`. |
+| `VITE_DATA_API_URL` | Optional | Base URL for the backend adapter (REST proxy to Google Sheets/CSV). When omitted, the API client falls back to local mock data. |
+| `VITE_ADMIN_EMAILS` | Optional | Comma-separated list of admin email addresses allowed to access `/admin`. If missing, any signed-in user is treated as admin (helpful for local testing). |
+
+- Store secrets in `.env.local`; `.env*` entries are ignored by git.
+- The API layer lives in `src/lib/api.ts` so swapping sheets/backends requires changes only in one place.
+- Zustand stores (`jobs-store`, `supporter-store`, etc.) consume the API client and expose async methods so UI components see the same state as the backend.
 
 ---
 
@@ -967,6 +1014,8 @@ src/
 **Document Owner:** Product Team  
 **Last Updated:** January 2025  
 **Next Review:** February 2025
+
+
 
 
 

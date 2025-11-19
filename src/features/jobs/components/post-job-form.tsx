@@ -62,9 +62,9 @@ export function PostJobForm() {
     setPaymentModalOpen(true)
   }
 
-  const handlePaymentSuccess = () => {
+  const handlePaymentSuccess = async () => {
     const formData = form.getValues()
-    addJob({
+    await addJob({
       ...formData,
       postedBy: userId!,
     })

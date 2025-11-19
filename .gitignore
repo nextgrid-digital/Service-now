@@ -13,6 +13,12 @@ dist-ssr
 *.local
 
 .env
+.env.local
+
+# Backend sensitive files
+backend/.env
+backend/service-account-key.json
+backend/node_modules
 
 # Editor directories and files
 .vscode/*

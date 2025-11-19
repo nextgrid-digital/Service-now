@@ -14,21 +14,14 @@
     @apply overflow-x-hidden;
   }
   body {
-    @apply bg-background text-foreground has-[div[data-variant='inset']]:bg-sidebar min-h-svh w-full;
-    background-image: 
-      radial-gradient(at 0% 0%, oklch(0.98 0.01 250 / 0.3) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, oklch(0.65 0.18 180 / 0.1) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, oklch(0.65 0.22 250 / 0.1) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, oklch(0.7 0.2 140 / 0.1) 0px, transparent 50%);
-    background-attachment: fixed;
+    @apply min-h-svh w-full;
+    background-color: var(--background);
+    color: var(--foreground);
   }
   
   .dark body {
-    background-image: 
-      radial-gradient(at 0% 0%, oklch(0.16 0.02 264.695 / 0.5) 0px, transparent 50%),
-      radial-gradient(at 100% 0%, oklch(0.7 0.18 180 / 0.08) 0px, transparent 50%),
-      radial-gradient(at 100% 100%, oklch(0.65 0.22 250 / 0.08) 0px, transparent 50%),
-      radial-gradient(at 0% 100%, oklch(0.7 0.2 140 / 0.08) 0px, transparent 50%);
+    background-color: var(--background);
+    color: var(--foreground);
   }
 
   #root {
